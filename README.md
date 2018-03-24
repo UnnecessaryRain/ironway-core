@@ -1,2 +1,2 @@
-# ironway-server
-server and game core for the Ironway mud
+# Ironway Core
+Core and server for the Ironway MUD
