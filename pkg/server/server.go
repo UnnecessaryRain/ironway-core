@@ -9,10 +9,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Options defines config for the server to use
+// passed in from the serveCommand
 type Options struct {
 	Addr string
 }
 
+// Server creates an endpoint for upgrading clients to websockets
+// Also handles the connections between client ws
+// receives messages from clients to be used by game core
 type Server struct {
 	Options
 
@@ -26,6 +31,7 @@ type Server struct {
 	stopChan chan struct{}
 }
 
+// NewServer creates a new Server object
 func NewServer(options Options, stop chan struct{}) *Server {
 	server := &Server{
 		Options:        options,
@@ -61,6 +67,7 @@ func (s *Server) run() {
 	}
 }
 
+// ServeForever starts the server and blocks forever
 func (s *Server) ServeForever() {
 	go s.run()
 
