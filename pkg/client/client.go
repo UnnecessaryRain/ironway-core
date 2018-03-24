@@ -9,11 +9,15 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Message is a bundle of Client and protocol.Message
+// Used for sending along the receivedChan and identifying the sender
 type Message struct {
 	Client  *Client
 	Message *protocol.Message
 }
 
+// Client is an instance of a websocket client
+// A client can send and receive messages through the SendChan and receiveChannel
 type Client struct {
 	conn *websocket.Conn
 
@@ -23,6 +27,7 @@ type Client struct {
 	unregisterFromServerChan chan<- *Client
 }
 
+// NewClient creates a new client object
 func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, unregisterChannel chan<- *Client) *Client {
 	return &Client{
 		conn:                     conn,
@@ -32,6 +37,8 @@ func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, unregisterCh
 	}
 }
 
+// StartReader starts the reading pump from the websocket
+// messages read will be sent to the passed in receivedChan
 func (c *Client) StartReader() {
 	defer func() {
 		c.unregisterFromServerChan <- c
@@ -62,6 +69,8 @@ func (c *Client) StartReader() {
 	}
 }
 
+// StartWriter starts a writer pump, writing messages to the websocket
+// messages can be given to the client to write through the SendChan
 func (c *Client) StartWriter() {
 	ticker := time.NewTicker(protocol.PingPeriod)
 	defer func() {

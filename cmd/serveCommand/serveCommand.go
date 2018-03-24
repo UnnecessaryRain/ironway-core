@@ -1,4 +1,4 @@
-package serveCommand
+package servecommand
 
 import (
 	"os"
@@ -14,6 +14,7 @@ type serveCommand struct {
 	addr string
 }
 
+// Configure sets up the command for server
 func Configure(app *kingpin.Application) {
 	s := &serveCommand{}
 	c := app.Command("serve", "starts a server").
