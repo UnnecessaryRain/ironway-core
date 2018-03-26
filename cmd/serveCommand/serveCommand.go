@@ -5,6 +5,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
+
+	"github.com/UnnecessaryRain/ironway-core/pkg/client"
+	"github.com/UnnecessaryRain/ironway-core/pkg/game"
+
 	"github.com/UnnecessaryRain/ironway-core/pkg/server"
 	log "github.com/sirupsen/logrus"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -26,7 +31,7 @@ func Configure(app *kingpin.Application) {
 }
 
 func (s *serveCommand) run(c *kingpin.ParseContext) error {
-	log.Println("Starting server at address", s.addr)
+	log.Infoln("Starting server at address", s.addr)
 
 	// signal handling to shutdown gracefully
 	sigs := make(chan os.Signal)
@@ -39,10 +44,16 @@ func (s *serveCommand) run(c *kingpin.ParseContext) error {
 		os.Exit(0)
 	}()
 
+	gameInstance := game.NewGame()
+	go gameInstance.RunForever(stopChan)
+
 	server := server.NewServer(server.Options{
 		Addr: s.addr,
-	}, stopChan)
-	server.ServeForever()
+	})
+	server.OnMessage(func(m client.Message) {
+		gameInstance.QueueCommand(commands.NewDebug(string(*m.Message)))
+	})
+	server.ServeForever(stopChan)
 
 	return nil
 }

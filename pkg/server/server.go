@@ -23,44 +23,51 @@ type Server struct {
 
 	Clients map[*client.Client]struct{}
 
+	OnMessageHandler func(client.Message)
+
 	receivedChan chan client.Message
 
 	registerChan   chan *client.Client
 	unregisterChan chan *client.Client
-
-	stopChan chan struct{}
 }
 
 // NewServer creates a new Server object
-func NewServer(options Options, stop chan struct{}) *Server {
+func NewServer(options Options) *Server {
 	server := &Server{
 		Options:        options,
 		Clients:        make(map[*client.Client]struct{}),
 		registerChan:   make(chan *client.Client),
 		unregisterChan: make(chan *client.Client),
 		receivedChan:   make(chan client.Message, 256),
-		stopChan:       stop,
 	}
 
 	return server
 }
 
-func (s *Server) run() {
+// OnMessage callback for a client message received
+func (s *Server) OnMessage(f func(client.Message)) {
+	s.OnMessageHandler = f
+}
+
+func (s *Server) run(stopChan chan struct{}) {
 	for {
 		select {
 		case client := <-s.registerChan:
 			s.Clients[client] = struct{}{}
 			log.Infoln("new client registered")
+
 		case client := <-s.unregisterChan:
 			if _, ok := s.Clients[client]; ok {
 				delete(s.Clients, client)
 				close(client.SendChan)
 			}
 			log.Infoln("client disconnected")
+
 		case clientMessage := <-s.receivedChan:
-			log.Printf("%s\n", *clientMessage.Message)
-			clientMessage.Client.SendChan <- protocol.Message("Omg message back from server!")
-		case <-s.stopChan:
+			s.OnMessageHandler(clientMessage)
+			clientMessage.Client.SendChan <- protocol.Message("temporary server reply")
+
+		case <-stopChan:
 			log.Infoln("stopping server")
 			return
 		}
@@ -68,8 +75,8 @@ func (s *Server) run() {
 }
 
 // ServeForever starts the server and blocks forever
-func (s *Server) ServeForever() {
-	go s.run()
+func (s *Server) ServeForever(stopChan chan struct{}) {
+	go s.run(stopChan)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveSocket(s, w, r)
