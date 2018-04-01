@@ -30,6 +30,9 @@ func Configure(app *kingpin.Application) {
 		StringVar(&s.addr)
 }
 
+// run the serve command code
+// creates the game and the server and pushes messages from
+// the server to the client
 func (s *serveCommand) run(c *kingpin.ParseContext) error {
 	log.Infoln("Starting server at address", s.addr)
 
@@ -40,7 +43,7 @@ func (s *serveCommand) run(c *kingpin.ParseContext) error {
 	go func() {
 		<-sigs
 		stopChan <- struct{}{}
-		// TODO: close http server gracefully aswell
+		// TODO(#4): close http server gracefully aswell
 		os.Exit(0)
 	}()
 

@@ -21,12 +21,14 @@ func Configure(app *kingpin.Application) {
 	g := &gameCommand{}
 	c := app.Command("game", "starts a game").
 		Action(g.run)
-	c.Flag("player", "player to use for this game").
-		Short('p').
-		Default("irony42").
+	// allows us to assume any user for debugging or testing
+	c.Flag("assume-user", "username to assume for this game").
+		Short('u').
 		StringVar(&g.player)
 }
 
+// run command for game command arg
+// runs only the game accepting commands from stdin instead of websockets
 func (g *gameCommand) run(c *kingpin.ParseContext) error {
 	log.Infoln("Starting standalone game with player", g.player)
 
@@ -37,7 +39,6 @@ func (g *gameCommand) run(c *kingpin.ParseContext) error {
 	go func() {
 		<-sigs
 		close(stopChan)
-		// TODO: close http gamer gracefully aswell
 		os.Exit(0)
 	}()
 

@@ -23,6 +23,7 @@ func (d Debug) Run(g *game.Game) {
 	fmt.Printf("Debug: %s\n", strings.TrimSpace(d.Message))
 }
 
+// String impl method for Stringer
 func (d Debug) String() string {
 	return d.Message
 }
