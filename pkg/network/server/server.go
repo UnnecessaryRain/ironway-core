@@ -3,9 +3,9 @@ package server
 import (
 	"net/http"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/protocol"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/client"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 	log "github.com/sirupsen/logrus"
 )
 

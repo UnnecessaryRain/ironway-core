@@ -7,10 +7,10 @@ import (
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/client"
 	"github.com/UnnecessaryRain/ironway-core/pkg/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/server"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/server"
 	log "github.com/sirupsen/logrus"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )

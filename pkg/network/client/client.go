@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/protocol"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 	"github.com/gorilla/websocket"
 )
 

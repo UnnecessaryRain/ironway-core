@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/client"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )

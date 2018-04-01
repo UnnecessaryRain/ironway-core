@@ -24,6 +24,7 @@ func Configure(app *kingpin.Application) {
 	// allows us to assume any user for debugging or testing
 	c.Flag("assume-user", "username to assume for this game").
 		Short('u').
+		Required().
 		StringVar(&g.player)
 }
 
