@@ -8,8 +8,9 @@ import (
 	"syscall"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/interpreter"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
+
 	log "github.com/sirupsen/logrus"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
@@ -59,7 +60,7 @@ func (g *gameCommand) run(c *kingpin.ParseContext) error {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		cmd := commands.NewDebug(scanner.Text())
+		cmd := interpreter.FindCommand(scanner.Text())
 		gameInstance.QueueCommand(outWriter, cmd)
 	}
 

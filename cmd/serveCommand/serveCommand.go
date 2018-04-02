@@ -5,9 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
-
 	"github.com/UnnecessaryRain/ironway-core/pkg/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/interpreter"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/server"
@@ -54,7 +53,8 @@ func (s *serveCommand) run(c *kingpin.ParseContext) error {
 		Addr: s.addr,
 	})
 	server.OnMessage(func(m client.Message) {
-		gameInstance.QueueCommand(m.Client, commands.NewDebug(string(*m.Message)))
+		cmd := interpreter.FindCommand(string(*m.Message))
+		gameInstance.QueueCommand(m.Client, cmd)
 	})
 	server.ServeForever(stopChan)
 
