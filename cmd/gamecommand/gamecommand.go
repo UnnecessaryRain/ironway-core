@@ -2,15 +2,24 @@ package gamecommand
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/game"
 	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 	log "github.com/sirupsen/logrus"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
+
+type stdOutSender struct{}
+
+// Send implements the send for this stdout sender
+func (s stdOutSender) Send(m protocol.Message) {
+	fmt.Println(m)
+}
 
 type gameCommand struct {
 	player string
@@ -43,13 +52,15 @@ func (g *gameCommand) run(c *kingpin.ParseContext) error {
 		os.Exit(0)
 	}()
 
+	var outWriter stdOutSender
+
 	gameInstance := game.NewGame()
 	go gameInstance.RunForever(stopChan)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		cmd := commands.NewDebug(scanner.Text())
-		gameInstance.QueueCommand(cmd)
+		gameInstance.QueueCommand(outWriter, cmd)
 	}
 
 	close(stopChan)

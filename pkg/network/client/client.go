@@ -9,6 +9,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Sender interface is anything that can send a protocol message
+type Sender interface {
+	Send(protocol.Message)
+}
+
 // Message is a bundle of Client and protocol.Message
 // Used for sending along the receivedChan and identifying the sender
 type Message struct {
@@ -35,6 +40,11 @@ func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, unregisterCh
 		receivedChan:             receiveChannel,
 		unregisterFromServerChan: unregisterChannel,
 	}
+}
+
+// Send sends the message to the send channel and then to the client
+func (c *Client) Send(m protocol.Message) {
+	c.SendChan <- m
 }
 
 // StartReader starts the reading pump from the websocket

@@ -54,7 +54,7 @@ func (s *serveCommand) run(c *kingpin.ParseContext) error {
 		Addr: s.addr,
 	})
 	server.OnMessage(func(m client.Message) {
-		gameInstance.QueueCommand(commands.NewDebug(string(*m.Message)))
+		gameInstance.QueueCommand(m.Client, commands.NewDebug(string(*m.Message)))
 	})
 	server.ServeForever(stopChan)
 

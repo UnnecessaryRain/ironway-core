@@ -3,8 +3,6 @@ package server
 import (
 	"net/http"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
-
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 	log "github.com/sirupsen/logrus"
 )
@@ -65,7 +63,6 @@ func (s *Server) run(stopChan chan struct{}) {
 
 		case clientMessage := <-s.receivedChan:
 			s.OnMessageHandler(clientMessage)
-			clientMessage.Client.SendChan <- protocol.Message("temporary server reply")
 
 		case <-stopChan:
 			log.Infoln("stopping server")
