@@ -13,7 +13,7 @@ type Debug struct {
 }
 
 // NewDebug creates a new text command
-func NewDebug(message string) Debug {
+func NewDebug(message string) game.Command {
 	return Debug{message}
 }
 
