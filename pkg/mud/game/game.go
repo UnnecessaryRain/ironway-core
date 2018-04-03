@@ -45,6 +45,7 @@ func (g *Game) RunForever(stopChan <-chan struct{}) {
 			cmd.command.Run(g)
 		case <-stopChan:
 			log.Infoln("Stopping game")
+			chatTicker.Stop()
 			return
 		}
 	}

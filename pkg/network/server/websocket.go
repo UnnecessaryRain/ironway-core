@@ -23,8 +23,7 @@ func serveSocket(server *Server, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := client.NewClient(conn, server.receivedChan, server.unregisterChan)
-	server.registerChan <- client
+	client := client.NewClient(conn, server.receivedChan, server.registerChan, server.unregisterChan)
 	go client.StartWriter()
 	go client.StartReader()
 }

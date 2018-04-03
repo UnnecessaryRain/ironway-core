@@ -22,5 +22,6 @@ const (
 	AppendMode  = "APPEND"
 	ReplaceMode = "REPLACE"
 
-	ChatFrame = "chat"
+	ChatFrame   = "chat"
+	OnlineFrame = "online"
 )

@@ -21,7 +21,7 @@ func NewChat(user, message string, timestamp int64) game.Command {
 
 // Run runs command on game
 func (c Chat) Run(g *game.Game) {
-	log.Infof("Chat: %s", strings.TrimSpace(c.Message))
+	log.Infof("Cmd(Chat): %s", strings.TrimSpace(c.Message))
 	g.Chat.Post(c.User, c.Message, c.Timestamp)
 }
 
