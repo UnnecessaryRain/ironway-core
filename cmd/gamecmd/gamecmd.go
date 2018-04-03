@@ -1,4 +1,4 @@
-package gamecommand
+package gamecmd
 
 import (
 	"bufio"
@@ -6,9 +6,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/interpreter"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/interpreter"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 
 	log "github.com/sirupsen/logrus"
@@ -18,7 +20,7 @@ import (
 type stdOutSender struct{}
 
 // Send implements the send for this stdout sender
-func (s stdOutSender) Send(m protocol.Message) {
+func (s stdOutSender) Send(m protocol.OutgoingMessage) {
 	fmt.Println(m)
 }
 
@@ -53,14 +55,24 @@ func (g *gameCommand) run(c *kingpin.ParseContext) error {
 		os.Exit(0)
 	}()
 
+	metadata := protocol.Metadata{
+		Username:  g.player,
+		Timestamp: time.Now().Unix(),
+	}
+
 	var outWriter stdOutSender
 
-	gameInstance := game.NewGame()
+	gameInstance := game.NewGame(outWriter)
 	go gameInstance.RunForever(stopChan)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		cmd := interpreter.FindCommand(scanner.Text())
+		m := protocol.IncommingMessage(scanner.Text())
+		cmd := interpreter.FindCommand(client.Message{
+			Metadata: &metadata,
+			Message:  &m,
+			Sender:   outWriter,
+		})
 		gameInstance.QueueCommand(outWriter, cmd)
 	}
 

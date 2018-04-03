@@ -1,12 +1,12 @@
-package servecommand
+package servecmd
 
 import (
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/interpreter"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/interpreter"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/server"
@@ -46,15 +46,16 @@ func (s *serveCommand) run(c *kingpin.ParseContext) error {
 		os.Exit(0)
 	}()
 
-	gameInstance := game.NewGame()
-	go gameInstance.RunForever(stopChan)
-
 	server := server.NewServer(server.Options{
 		Addr: s.addr,
 	})
+
+	gameInstance := game.NewGame(server)
+	go gameInstance.RunForever(stopChan)
+
 	server.OnMessage(func(m client.Message) {
-		cmd := interpreter.FindCommand(string(*m.Message))
-		gameInstance.QueueCommand(m.Client, cmd)
+		cmd := interpreter.FindCommand(m)
+		gameInstance.QueueCommand(m.Sender, cmd)
 	})
 	server.ServeForever(stopChan)
 

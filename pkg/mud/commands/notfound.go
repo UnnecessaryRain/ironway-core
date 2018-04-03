@@ -3,8 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 )
 
 // NotFound defines a canned response
@@ -20,11 +19,6 @@ func NewNotFound(message string) game.Command {
 // Run command on game, sending back canned help message
 func (d NotFound) Run(g *game.Game) {
 	fmt.Printf("No command '%s' found. Use /help etc etc\n", d.Message)
-}
-
-// Reply just the not found message back to the client
-func (d NotFound) Reply() protocol.Message {
-	return protocol.Message(d.Message)
 }
 
 // String impl method for Stringer

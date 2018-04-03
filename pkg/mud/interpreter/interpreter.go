@@ -3,8 +3,9 @@ package interpreter
 import (
 	"strings"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -15,7 +16,11 @@ var commandDict = map[string]func(string) game.Command{
 }
 
 // FindCommand interpretes keyword of string and return relevant Command
-func FindCommand(cmd string) game.Command {
+func FindCommand(message client.Message) game.Command {
+	cmd := string(*message.Message)
+	user := message.Metadata.Username
+	timestamp := message.Metadata.Timestamp
+
 	// Empty command passed somehow
 	if len(cmd) == 0 {
 		log.Warningln("Passed command was empty")
@@ -24,7 +29,7 @@ func FindCommand(cmd string) game.Command {
 
 	// Chat check
 	if cmd[0] != '/' {
-		return commands.NewChat(cmd)
+		return commands.NewChat(user, cmd, timestamp)
 	}
 
 	key := strings.Fields(cmd)[0][1:]

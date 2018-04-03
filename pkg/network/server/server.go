@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,8 @@ type Server struct {
 
 	registerChan   chan *client.Client
 	unregisterChan chan *client.Client
+
+	broadcastChan chan protocol.OutgoingMessage
 }
 
 // NewServer creates a new Server object
@@ -37,9 +40,15 @@ func NewServer(options Options) *Server {
 		registerChan:   make(chan *client.Client),
 		unregisterChan: make(chan *client.Client),
 		receivedChan:   make(chan client.Message, 256),
+		broadcastChan:  make(chan protocol.OutgoingMessage, 256),
 	}
 
 	return server
+}
+
+// Send broadcasts the message to all connected clients
+func (s *Server) Send(m protocol.OutgoingMessage) {
+	s.broadcastChan <- m
 }
 
 // OnMessage callback for a client message received
@@ -63,6 +72,11 @@ func (s *Server) run(stopChan chan struct{}) {
 
 		case clientMessage := <-s.receivedChan:
 			s.OnMessageHandler(clientMessage)
+
+		case globalMessage := <-s.broadcastChan:
+			for c := range s.Clients {
+				c.Send(globalMessage)
+			}
 
 		case <-stopChan:
 			log.Infoln("stopping server")

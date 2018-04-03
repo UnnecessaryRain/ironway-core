@@ -9,16 +9,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Sender interface is anything that can send a protocol message
-type Sender interface {
-	Send(protocol.Message)
-}
-
 // Message is a bundle of Client and protocol.Message
 // Used for sending along the receivedChan and identifying the sender
 type Message struct {
-	Client  *Client
-	Message *protocol.Message
+	Sender   protocol.Sender
+	Metadata *protocol.Metadata
+	Message  *protocol.IncommingMessage
 }
 
 // Client is an instance of a websocket client
@@ -26,7 +22,7 @@ type Message struct {
 type Client struct {
 	conn *websocket.Conn
 
-	SendChan chan protocol.Message
+	SendChan chan protocol.OutgoingMessage
 
 	receivedChan             chan<- Message
 	unregisterFromServerChan chan<- *Client
@@ -36,14 +32,14 @@ type Client struct {
 func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, unregisterChannel chan<- *Client) *Client {
 	return &Client{
 		conn:                     conn,
-		SendChan:                 make(chan protocol.Message, 256),
+		SendChan:                 make(chan protocol.OutgoingMessage, 256),
 		receivedChan:             receiveChannel,
 		unregisterFromServerChan: unregisterChannel,
 	}
 }
 
 // Send sends the message to the send channel and then to the client
-func (c *Client) Send(m protocol.Message) {
+func (c *Client) Send(m protocol.OutgoingMessage) {
 	c.SendChan <- m
 }
 
@@ -73,8 +69,8 @@ func (c *Client) StartReader() {
 
 		packet := protocol.UnmarshalPacket(packetBytes)
 		log.Printf("message: %#v", packet)
-		for _, message := range packet.Messages {
-			c.receivedChan <- Message{c, &message}
+		for _, message := range packet.ServerMessages {
+			c.receivedChan <- Message{c, &packet.Metadata, &message}
 		}
 	}
 }
@@ -103,12 +99,12 @@ func (c *Client) StartWriter() {
 			}
 
 			var nextPacket protocol.Packet
-			nextPacket.Messages = append(nextPacket.Messages, message)
+			nextPacket.ClientMessages = append(nextPacket.ClientMessages, message)
 
 			// read the current queued packets
 			n := len(c.SendChan)
 			for i := 0; i < n; i++ {
-				nextPacket.Messages = append(nextPacket.Messages, <-c.SendChan)
+				nextPacket.ClientMessages = append(nextPacket.ClientMessages, <-c.SendChan)
 			}
 			w.Write(protocol.MarshalPacket(nextPacket))
 			if err := w.Close(); err != nil {

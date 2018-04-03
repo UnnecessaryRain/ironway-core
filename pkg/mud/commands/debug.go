@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 )
 
 // Debug defines a text to stdout command type
@@ -22,11 +21,6 @@ func NewDebug(message string) game.Command {
 // just print the message
 func (d Debug) Run(g *game.Game) {
 	fmt.Printf("Debug: %s\n", strings.TrimSpace(d.Message))
-}
-
-// Reply sends back the returned value to the sender
-func (d Debug) Reply() protocol.Message {
-	return protocol.Message("debug:" + d.Message)
 }
 
 // String impl method for Stringer
