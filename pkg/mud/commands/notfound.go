@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 )
 
 // NotFound defines a canned response

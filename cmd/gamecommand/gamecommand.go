@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/interpreter"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/interpreter"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 
 	log "github.com/sirupsen/logrus"

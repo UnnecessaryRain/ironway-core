@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 )
 
 // Debug defines a text to stdout command type

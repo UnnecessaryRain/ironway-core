@@ -3,8 +3,8 @@ package interpreter
 import (
 	"strings"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/game"
-	"github.com/UnnecessaryRain/ironway-core/pkg/game/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/commands"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 
 	log "github.com/sirupsen/logrus"
 )
