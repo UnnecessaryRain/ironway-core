@@ -33,7 +33,6 @@ func (g *Game) RunForever(stopChan <-chan struct{}) {
 		select {
 		case cmd := <-g.CommandChan:
 			cmd.command.Run(g)
-			cmd.client.Send(cmd.command.Reply())
 		case <-stopChan:
 			log.Infoln("Stopping game")
 			return
