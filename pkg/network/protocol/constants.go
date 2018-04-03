@@ -23,5 +23,6 @@ const (
 	ReplaceMode = "REPLACE"
 
 	ChatFrame   = "chat"
+	LogFrame    = "log"
 	OnlineFrame = "online"
 )

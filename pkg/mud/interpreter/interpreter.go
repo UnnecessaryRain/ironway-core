@@ -23,8 +23,8 @@ func FindCommand(message client.Message) game.Command {
 
 	// Empty command passed somehow
 	if len(cmd) == 0 {
-		log.Warningln("Passed command was empty")
-		return commands.NewNotFound("")
+		log.Infoln("Passed command was empty")
+		return commands.NewNotFound(message.Sender, "Passed command was empty")
 	}
 
 	// Chat check
@@ -36,5 +36,5 @@ func FindCommand(message client.Message) game.Command {
 	if val, ok := commandDict[key]; ok {
 		return val(cmd)
 	}
-	return commands.NewNotFound(key)
+	return commands.NewNotFound(message.Sender, key)
 }
