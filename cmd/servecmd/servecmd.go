@@ -1,4 +1,4 @@
-package servecommand
+package servecmd
 
 import (
 	"os"

@@ -1,4 +1,4 @@
-package gamecommand
+package gamecmd
 
 import (
 	"bufio"
