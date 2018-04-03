@@ -2,6 +2,7 @@ package protocol
 
 import "time"
 
+// Websocket constants
 const (
 	// WriteWait is the Time allowed to write a message to the peer.
 	WriteWait = 10 * time.Second
@@ -14,4 +15,12 @@ const (
 
 	// MaxMessageSize message size allowed from peer.
 	MaxMessageSize = 512
+)
+
+// Message constants
+const (
+	AppendMode  = "APPEND"
+	ReplaceMode = "REPLACE"
+
+	ChatFrame = "chat"
 )

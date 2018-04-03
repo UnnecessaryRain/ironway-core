@@ -6,10 +6,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Metadata about the player/client who sent this packet
+type Metadata struct {
+	Username  string `json:"username,omitempty"`
+	Token     string `json:"token,omitempty"`
+	Timestamp int64  `json:"timestamp,omitempty"`
+}
+
 // Packet is used to send multiple messages to and from the server
 // Packet can also wrap token in the upper level to save data
 type Packet struct {
-	Messages []Message `json:"messages,omitempty"`
+	Metadata       Metadata           `json:"metadata,omitempty"`
+	ClientMessages []OutgoingMessage  `json:"client_messages,omitempty"`
+	ServerMessages []IncommingMessage `json:"server_messages,omitempty"`
 }
 
 // MarshalPacket turns a packet into json
