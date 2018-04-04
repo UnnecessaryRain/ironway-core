@@ -1,0 +1,74 @@
+{
+  "_DEFAULT": {
+    "ref_id": "_DEFAULT",
+    "icon": ".",
+    "name": "Grass",
+    "info": "",
+    "clip": false,
+    "color": "#009933"
+  },
+  "bridge_wood": {
+    "ref_id": "bridge_wood",
+    "icon": "-",
+    "name": "Wooden Bridge",
+    "info": "",
+    "clip": false,
+    "color": "#b36b00"
+  },
+  "path_dirt": {
+    "ref_id": "path_dirt",
+    "icon": ".",
+    "name": "Dirt",
+    "info": "",
+    "clip": false,
+    "color": "#dfbf9f"
+  },
+  "path_grass": {
+    "ref_id": "path_grass",
+    "icon": ".",
+    "name": "Grass",
+    "info": "",
+    "clip": false,
+    "color": "#009933"
+  },
+  "path_stone": {
+    "ref_id": "path_stone",
+    "icon": ".",
+    "name": "Path",
+    "info": "",
+    "clip": false,
+    "color": "#f2f2f2"
+  },
+  "rock": {
+    "ref_id": "rock",
+    "icon": "^",
+    "name": "Rock",
+    "info": "",
+    "clip": true,
+    "color": "#996633"
+  },
+  "tree": {
+    "ref_id": "tree",
+    "icon": "T",
+    "name": "Tree",
+    "info": "",
+    "clip": true,
+    "color": "#009933"
+  },
+  "wall_house": {
+    "ref_id": "wall_house",
+    "icon": "#",
+    "name": "House Wall",
+    "info": "",
+    "clip": true,
+    "color": "#666699"
+  },
+  "water_deep": {
+    "ref_id": "water_deep",
+    "icon": "~",
+    "name": "Deep Water",
+    "info": "",
+    "clip": true,
+    "color": "#0033cc"
+  }
+}

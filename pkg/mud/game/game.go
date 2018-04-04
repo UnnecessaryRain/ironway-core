@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/mud/chat"
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game/world"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
 	log "github.com/sirupsen/logrus"
 )
@@ -16,6 +17,7 @@ type clientCommand struct {
 // Game defines the master game object and everything in the game
 type Game struct {
 	Chat        *chat.Chat
+	World       *world.World
 	CommandChan chan clientCommand
 	everyone    protocol.Sender
 }
@@ -24,6 +26,7 @@ type Game struct {
 func NewGame(broadcaster protocol.Sender) *Game {
 	return &Game{
 		Chat:        new(chat.Chat),
+		World:       world.NewWorld(),
 		CommandChan: make(chan clientCommand, 256),
 		everyone:    broadcaster,
 	}
