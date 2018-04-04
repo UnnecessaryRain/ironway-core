@@ -1,6 +1,8 @@
 package server
 
 import (
+	"bytes"
+	"fmt"
 	"net/http"
 
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/client"
@@ -57,17 +59,38 @@ func (s *Server) OnMessage(f func(client.Message)) {
 }
 
 func (s *Server) run(stopChan chan struct{}) {
+	sendOnline := func() {
+		var users bytes.Buffer
+
+		users.WriteString("<u>[ ONLINE (")
+		users.WriteString(fmt.Sprint(len(s.Clients)))
+		users.WriteString(") ]</u>")
+		for c := range s.Clients {
+			users.WriteString("<br>")
+			users.WriteString(c.Username)
+			users.WriteString("\n")
+		}
+
+		s.broadcastChan <- protocol.OutgoingMessage{
+			Frame:   protocol.OnlineFrame,
+			Content: users.String(),
+			Mode:    protocol.ReplaceMode,
+		}
+	}
+
 	for {
 		select {
 		case client := <-s.registerChan:
 			s.Clients[client] = struct{}{}
-			log.Infoln("new client registered")
+			log.Infoln("new client registered with username", client.Username)
+			sendOnline()
 
 		case client := <-s.unregisterChan:
 			if _, ok := s.Clients[client]; ok {
 				delete(s.Clients, client)
 				close(client.SendChan)
 			}
+			sendOnline()
 			log.Infoln("client disconnected")
 
 		case clientMessage := <-s.receivedChan:

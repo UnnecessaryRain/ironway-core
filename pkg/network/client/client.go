@@ -1,6 +1,7 @@
 package client
 
 import (
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -20,20 +21,24 @@ type Message struct {
 // Client is an instance of a websocket client
 // A client can send and receive messages through the SendChan and receiveChannel
 type Client struct {
+	Username string
+
 	conn *websocket.Conn
 
 	SendChan chan protocol.OutgoingMessage
 
 	receivedChan             chan<- Message
 	unregisterFromServerChan chan<- *Client
+	registerOnServerChan     chan<- *Client
 }
 
 // NewClient creates a new client object
-func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, unregisterChannel chan<- *Client) *Client {
+func NewClient(conn *websocket.Conn, receiveChannel chan<- Message, registerChan, unregisterChannel chan<- *Client) *Client {
 	return &Client{
 		conn:                     conn,
 		SendChan:                 make(chan protocol.OutgoingMessage, 256),
 		receivedChan:             receiveChannel,
+		registerOnServerChan:     registerChan,
 		unregisterFromServerChan: unregisterChannel,
 	}
 }
@@ -58,18 +63,39 @@ func (c *Client) StartReader() {
 		return nil
 	})
 
+	timeout := time.NewTimer(5 * time.Second)
+
+	go func() {
+		<-timeout.C
+		log.Errorf("timeout for addr %v. did not receive username in time. disconnecting", c.conn.RemoteAddr())
+		c.conn.Close()
+	}()
+
 	for {
 		_, packetBytes, err := c.conn.ReadMessage()
+		timeout.Stop()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Warningln(err)
+				log.Debugln(err)
 			}
 			break
 		}
 
 		packet := protocol.UnmarshalPacket(packetBytes)
-		log.Printf("message: %#v", packet)
-		for _, message := range packet.ServerMessages {
+		log.Debugf("message: %#v", packet)
+		for i, message := range packet.ServerMessages {
+
+			// FIXME(#9): the first messaage from the client must be a one word string with no spaces
+			// this will be their user name for now
+			if len(c.Username) == 0 && i == 0 {
+				if len(strings.Split(strings.TrimSpace(string(message)), "")) == 0 {
+					log.Warningln("username expected as first message. got ", message)
+					return
+				}
+				c.Username = strings.TrimSpace(string(message))
+				c.registerOnServerChan <- c
+				continue
+			}
 			c.receivedChan <- Message{c, &packet.Metadata, &message}
 		}
 	}
