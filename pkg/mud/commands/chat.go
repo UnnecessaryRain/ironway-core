@@ -3,6 +3,7 @@ package commands
 import (
 	"strings"
 
+	"github.com/UnnecessaryRain/ironway-core/pkg/mud/frame"
 	"github.com/UnnecessaryRain/ironway-core/pkg/mud/game"
 	log "github.com/sirupsen/logrus"
 )
@@ -22,7 +23,7 @@ func NewChat(user, message string, timestamp int64) game.Command {
 // Run runs command on game
 func (c Chat) Run(g *game.Game) {
 	log.Infof("Cmd(Chat): %s", strings.TrimSpace(c.Message))
-	g.Chat.Post(c.User, c.Message, c.Timestamp)
+	g.Chat.Schedule(frame.ChatFormat(c.User, c.Message, c.Timestamp))
 }
 
 // String impl method for Stringer

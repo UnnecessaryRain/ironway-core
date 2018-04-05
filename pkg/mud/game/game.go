@@ -3,8 +3,8 @@ package game
 import (
 	"time"
 
-	"github.com/UnnecessaryRain/ironway-core/pkg/mud/chat"
 	"github.com/UnnecessaryRain/ironway-core/pkg/network/protocol"
+	"github.com/UnnecessaryRain/ironway-core/pkg/network/stream"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -15,7 +15,7 @@ type clientCommand struct {
 
 // Game defines the master game object and everything in the game
 type Game struct {
-	Chat        *chat.Chat
+	Chat        stream.Stream
 	CommandChan chan clientCommand
 	everyone    protocol.Sender
 }
@@ -23,7 +23,7 @@ type Game struct {
 // NewGame creates a new game object on the heap
 func NewGame(broadcaster protocol.Sender) *Game {
 	return &Game{
-		Chat:        new(chat.Chat),
+		Chat:        stream.NewStream(100),
 		CommandChan: make(chan clientCommand, 256),
 		everyone:    broadcaster,
 	}
@@ -36,7 +36,7 @@ func (g *Game) QueueCommand(sender protocol.Sender, cmd Command) {
 
 // RunForever until stop channel closed
 func (g *Game) RunForever(stopChan <-chan struct{}) {
-	chatTicker := time.NewTicker(100 * time.Millisecond)
+	chatTicker := time.NewTicker(g.Chat.SendRate * time.Millisecond)
 	for {
 		select {
 		case <-chatTicker.C:
