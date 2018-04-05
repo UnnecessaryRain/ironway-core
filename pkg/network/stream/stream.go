@@ -26,6 +26,7 @@ func (p *Stream) Schedule(m protocol.OutgoingMessage) {
 
 // Flush sends the scheduled messages
 func (p *Stream) Flush(sender protocol.Sender) {
+	// TODO(#10) compress messages to a larger packet and send as one?
 	for _, m := range p.Messages {
 		sender.Send(m)
 	}
