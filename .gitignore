@@ -13,3 +13,7 @@ ironway-core
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+
+# Local Files
+.DS_Store
+.vscode
